@@ -3,6 +3,7 @@
 #conor.hamill@ed.ac.uk
 
 import math, statistics
+import csv
 
 def main():
 	print("hello world")
@@ -74,13 +75,96 @@ def main():
 	print("Mean is {}".format(mean_diameter))
 
 	
+	'''3) The min, max, mean and standard deviation of the MOID to Earth for 
+	objects with the Near-Earth Object flag = Y ("neo" column), and separately 
+	for objects with the Potentially Hazardous Asteroid flag = Y ("pha" column).'''
+
+	print(input_file_lines[0].split(',').index("neo"))
+	print(input_file_lines[0].split(',').index("pha"))
+	print(input_file_lines[0].split(',').index("moid"))
+
+	moid_neo_array = [] #initialising array of moids for near earth objects
+	moid_pha_array = []	#initialising array of moids for potentially hazardous asteroids
 	
-	
+	# for line in input_file_lines:
+		# line_split = line.split(',')
+		# #picking out neo 
+		# line_split = line.split(',')
+		
+		# if line_split[11] and line_split[1] == 'neo':
+			# line_split[11] 
 	
 	
 	
 	
 	
 	input_file.close()
+	
+	#Trying using csv reader 
+	
+	with open('small-body-db.txt', newline='') as csvfile:
+		reader = csv.DictReader(csvfile)
+		# for row in reader:
+			# print(row['moid'])
+	
+		#This is much easier...
+		
+		for row in reader: 
+			#picking out moids for neo
+			if row['neo'] == 'Y':
+				print(row['moid'])
+				moid_neo_array.append(float(row['moid']))
+				
+			#picking out moids for phas
+			if row['pha'] == 'Y':
+				print(row['moid'])
+				moid_pha_array.append(float(row['moid']))
+			
+		
+		#Min, max, mean of moid_neo_array
+		print("Moid_neo_array - Min:{} Max:{} Mean:{}".format(min(moid_neo_array), max(moid_neo_array), statistics.mean(moid_neo_array)))
+		print("Moid_pha_array - Min:{} Max:{} Mean:{}".format(min(moid_pha_array), max(moid_pha_array), statistics.mean(moid_pha_array)))
+	
+		
+		'''4) How many objects have been found by each person/group/institution ("producer" column).'''
+
+		
+		print("Producer column is {}".format(input_file_lines[0].split(',').index("producer")))
+		print("hello")
+		print("hello")
+	
+	
+	#Setting up list of unique producers
+	producers_unique_list = []
+	with open('small-body-db.txt', newline='') as csvfile:	
+		reader = csv.DictReader(csvfile)
+		for row in reader:			
+			#if row['neo'] == 'Y':
+			#print(row['producer'])
+			if(row['producer']):
+				if row['producer'] not in producers_unique_list:
+					producers_unique_list.append(row['producer'])
+				
+		print(producers_unique_list)
+	
+	#Setting up dictionary for counting each of the unique producers 
+	producers_dict = {}
+	#Initialising producers_dict with zeroes
+	for item in producers_unique_list:
+		producers_dict[item] = 0
+	print(producers_dict)	
+	
+	#Iterating through data and counting the number of observations by each producer
+	with open('small-body-db.txt', newline='') as csvfile:	
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			if row['producer']: #Checking if a producer is listed
+				print(row['producer'])
+				dummy_variable = producers_dict[row['producer']]
+				producers_dict[row['producer']] = dummy_variable + 1
+	print(producers_dict)
+	
+	
+	
 	
 main()	
