@@ -159,12 +159,77 @@ def main():
 		reader = csv.DictReader(csvfile)
 		for row in reader:
 			if row['producer']: #Checking if a producer is listed
-				print(row['producer'])
+				#print(row['producer'])
 				dummy_variable = producers_dict[row['producer']]
 				producers_dict[row['producer']] = dummy_variable + 1
 	print(producers_dict)
 	
+	'''5) The names of the objects with the earliest and latest 
+	first observation ("first_obs" column).'''
+	#Shall attempt this a slightly different way from question 1
+	
+	#Initialising list of observations
+	first_obs_list = []
+	name_list = []
+	with open('small-body-db.txt', newline='') as csvfile:	
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			# print(row['first_obs'])
+			first_obs_list.append(row['first_obs'])
+			name_list.append(row['full_name'])
+			
+	#Initilaising variables to use
+	earliest_year = earliest_month = earliest_day = 10000
+	latest_year = latest_month = latest_day = 0
+	
+	for date in first_obs_list:
+		# print(date)
+		# print(date)
+		# print(date[:4])
+		# print(date[5:7])
+		# print(date[-2:])
+		
+		#Check if things are numbers
+		year = date[:4]
+		month = date[5:7]
+		day = date[-2:]
+		
+		# print(year, month, day)		
+			
+		if(year.isdigit() == 0 or month.isdigit() == 0 or day.isdigit() == 0):
+			#print("Digit not found, skipping entry with date{}".format(date)
+			continue
+		
+		year = float(year)
+		month = float(month)
+		day = float(day)
+		
+		#Checking if date is earlier than earliest year
+		if(year <= earliest_year):
+			if(month <= earliest_month):
+				if(day < earliest_day):
+					earliest_day = day
+					earliest_month = month
+					earliest_year = year
+					earliest_name = name_list[first_obs_list.index(date)]
+					earliest_date = '{}-{}-{}'.format(int(earliest_year), int(earliest_month), int(earliest_day))
+					print("New earliest date of {}, with name {}".format(earliest_date, earliest_name))
+	
+	#Checking if date is later than latest year
+		if(year >= latest_year):
+			if(month >= latest_month):
+				if(day >= latest_day):
+					latest_day = day
+					latest_month = month
+					latest_year = year
+					latest_name = name_list[first_obs_list.index(date)]
+					latest_date = '{}-{}-{}'.format(int(latest_year), int(latest_month), int(latest_day))
+					print("New latest date of {}, with name {}".format(latest_date, latest_name))
+	
+	print("Earliest date is {}, with a name of {}".format(earliest_date, earliest_name))
+	print("Latest date is {}, with a name of {}".format(latest_date, latest_name))
 	
 	
 	
+	# print(len(first_obs_list), len(name_list))
 main()	
