@@ -5,6 +5,11 @@
 import math, statistics
 import csv
 
+#Function finds the year at the start of a decade for a year
+def year_to_decade(year):
+	decade = year - (year % 10)
+	return decade
+
 def main():
 	print("hello world")
 	
@@ -50,7 +55,7 @@ def main():
 				largest_moid_name = line_split[0]
 				
 		#print(line_split)
-		
+	print("Question 1:")	
 	print("smallest_moid is {}, smallest moid name is {}".format(smallest_moid, smallest_moid_name))
 	print("largest_moid is {}, largest moid name is {}".format(largest_moid, largest_moid_name))
 	
@@ -71,6 +76,8 @@ def main():
 	
 	mean_diameter = statistics.mean(diameter_list)
 	stddev_diameter = statistics.stdev(diameter_list)
+	
+	print("Question 2:")
 	print("Standard deviation is {}".format(stddev_diameter))
 	print("Mean is {}".format(mean_diameter))
 
@@ -112,16 +119,17 @@ def main():
 		for row in reader: 
 			#picking out moids for neo
 			if row['neo'] == 'Y':
-				print(row['moid'])
+				#print(row['moid'])
 				moid_neo_array.append(float(row['moid']))
 				
 			#picking out moids for phas
 			if row['pha'] == 'Y':
-				print(row['moid'])
+				#print(row['moid'])
 				moid_pha_array.append(float(row['moid']))
 			
 		
 		#Min, max, mean of moid_neo_array
+		print("Question 3:")
 		print("Moid_neo_array - Min:{} Max:{} Mean:{}".format(min(moid_neo_array), max(moid_neo_array), statistics.mean(moid_neo_array)))
 		print("Moid_pha_array - Min:{} Max:{} Mean:{}".format(min(moid_pha_array), max(moid_pha_array), statistics.mean(moid_pha_array)))
 	
@@ -130,9 +138,7 @@ def main():
 
 		
 		print("Producer column is {}".format(input_file_lines[0].split(',').index("producer")))
-		print("hello")
-		print("hello")
-	
+		
 	
 	#Setting up list of unique producers
 	producers_unique_list = []
@@ -162,6 +168,7 @@ def main():
 				#print(row['producer'])
 				dummy_variable = producers_dict[row['producer']]
 				producers_dict[row['producer']] = dummy_variable + 1
+	print("Question 4:")
 	print(producers_dict)
 	
 	'''5) The names of the objects with the earliest and latest 
@@ -229,7 +236,82 @@ def main():
 	print("Earliest date is {}, with a name of {}".format(earliest_date, earliest_name))
 	print("Latest date is {}, with a name of {}".format(latest_date, latest_name))
 	
+	'''6) The mean absolute magnitude ("H") of objects with first observation in 
+	each decade (group the objects according to the decade of their first
+	observation and calculate the mean "H" for each group). A decade is defined 
+	as, eg, 2000-01-01 to 2009-12-31 inclusive. If there are no entries for a 
+	given decade, or no entries with an "H" value, it should be skipped.'''
+	
+	print(input_file_lines[0].split(',').index("H"))
+	
+	with open('small-body-db.txt', newline='') as csvfile:
+		#Defining list with start decade and H value
+		decade_list = []	
+		unique_decades_list = [] #list where each decade only appears once
+		reader = csv.DictReader(csvfile)
+
+		for row in reader:
+			#First finding which decades are contained in the data set
+			#Only really interested in years for the first observation
+			date = row['first_obs']
+			year = int(date[:4])
+			# decade = year - (year % 10)
+			decade = year_to_decade(year)
+			# print(decade)
+			if row['H']:
+				H_value = float(row['H'])
+				decade_list.append((decade, H_value))
+			
+			if row['H'] and decade not in unique_decades_list:
+				print("New date found: {}".format(decade))
+				print(row['full_name'])
+				unique_decades_list.append(decade)
+		
+		
+		#Sorting list
+		print(unique_decades_list)
+		unique_decades_list.sort()
+		print(unique_decades_list)
+		#Initialsing sorted decade list
+		sorted_H_decade_list = []
+		
+		print(len(decade_list))
+		print(decade_list[0])
+		
+		for item in decade_list:
+			#print(item[0])
+			if(1890 == item[0]):
+				print("1890 found")
+		
+		decade_index = 0
+		for decade in unique_decades_list: #Iterating over each decade that's been found
+			#print(decade)
+			for item in decade_list:
+				#print(item[0], decade)
+				#print(type(item[0]), type(decade))
+				if item[0] == decade:
+					sorted_H_decade_list.append(item[1])
+					#print(len(sorted_H_decade_list))	
+					#print("Decade match found")
+					#print(item[0], decade)
+					
+			decade_mean = statistics.mean(sorted_H_decade_list) #Mean for a particular decade calculated
+			# print("For decade starting {}, the mean is {}".format(decade, decade_mean))
+			decade_index = decade_index + 1
+			print("For decade {}, mean is {}, with a length of {}".format(decade, decade_mean, len(sorted_H_decade_list)))
+			
+			#Empties list so new elements can be added
+			sorted_H_decade_list.clear()
+	
+		#print(unique_decades_list)
+		#print(decade_list)
 	
 	
-	# print(len(first_obs_list), len(name_list))
+	
+
+		
+		
+		
+		
+	
 main()	
